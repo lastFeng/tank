@@ -81,7 +81,11 @@ public class Tank {
                     break;
             }
         }
-        move();
+        int[] move = Direction.move(this.moving, x, y, SPEED, direction);
+        if (move != null) {
+            x = move[0];
+            y = move[1];
+        }
     }
 
     public void keyPressed(KeyEvent event) {
@@ -116,30 +120,11 @@ public class Tank {
             case KeyEvent.VK_DOWN:
                 bD = false;
                 break;
+            case KeyEvent.VK_CONTROL:
+                fire();
+                break;
         }
         setTankDirection();
-    }
-
-    private void move() {
-        if (!moving) {
-            return;
-        }
-
-        switch (direction){
-            case L:
-                x -= SPEED;
-                break;
-            case R:
-                x += SPEED;
-                break;
-            case U:
-                y -= SPEED;
-                break;
-            case D:
-                y += SPEED;
-                break;
-        }
-
     }
 
     private void setTankDirection() {
@@ -160,5 +145,9 @@ public class Tank {
                 direction = Direction.D;
             }
         }
+    }
+
+    public void fire() {
+        TankFrame.INSTANCE.addBullet(new Bullet(x, y, direction, tankGroup));
     }
 }

@@ -25,5 +25,27 @@ package server;
  * @create: 2020/6/12 10:35
  */
 public enum  Direction {
-    L, R, U, D
+    L, R, U, D;
+    public static int[] move(final boolean moving, int x, int y, final int SPEED, Direction direction) {
+        if (!moving) {
+            return null;
+        }
+
+        switch (direction){
+            case L:
+                x -= SPEED;
+                break;
+            case R:
+                x += SPEED;
+                break;
+            case U:
+                y -= SPEED;
+                break;
+            case D:
+                y += SPEED;
+                break;
+        }
+
+        return new int[] {x, y};
+    }
 }

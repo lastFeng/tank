@@ -18,6 +18,8 @@ package server;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p> Title: </p>
@@ -29,13 +31,17 @@ import java.awt.event.KeyEvent;
  * @create: 2020/6/12 10:36
  */
 public class TankFrame extends Frame {
+
+    public static final TankFrame INSTANCE = new TankFrame();
+
     private static int GAME_WIDTH = 800;
     private static int GAME_HEIGHT = 800;
     private Tank myTank;
     private Tank enemyTank;
+    private List<Bullet> bulletList = new ArrayList<>();
     private Image offScreenImage = null;
 
-    public TankFrame(){
+    private TankFrame(){
         this.myTank = new Tank(100, 100, Direction.R, TankGroup.GOOD);
         this.enemyTank = new Tank(200, 200, Direction.L, TankGroup.BAD);
         this.setTitle("坦克大战");
@@ -73,6 +79,9 @@ public class TankFrame extends Frame {
     public void paint(Graphics graphics) {
         myTank.paint(graphics);
         enemyTank.paint(graphics);
+        if (!bulletList.isEmpty()) {
+            bulletList.forEach(bullet -> bullet.paint(graphics));
+        }
     }
 
     /**
@@ -88,5 +97,9 @@ public class TankFrame extends Frame {
         public void keyReleased(KeyEvent event) {
             myTank.keyReleased(event);
         }
+    }
+
+    public void addBullet(Bullet bullet) {
+        bulletList.add(bullet);
     }
 }

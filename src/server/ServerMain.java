@@ -26,8 +26,7 @@ package server;
  */
 public class ServerMain {
     public static void main(String[] args) {
-        TankFrame tankFrame = new TankFrame();
-        tankFrame.setVisible(true);
+        TankFrame.INSTANCE.setVisible(true);
 
         // 每秒40帧
         for (;;) {
@@ -36,7 +35,7 @@ public class ServerMain {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            tankFrame.repaint();
+            TankFrame.INSTANCE.repaint();
         }
     }
 }
