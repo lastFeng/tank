@@ -37,27 +37,49 @@ public class Tank {
     private boolean bU;
     private boolean bD;
     private boolean moving;
+    private TankGroup tankGroup;
 
-    public Tank(int x, int y, Direction direction) {
+    public Tank(int x, int y, Direction direction, TankGroup tankGroup) {
         this.x = x;
         this.y = y;
         this.direction = direction;
+        this.tankGroup = tankGroup;
     }
 
     public void paint(Graphics graphics) {
-        switch (direction) {
-            case L:
-                graphics.drawImage(ResourceManager.goodTankL, x, y, null);
-                break;
-            case R:
-                graphics.drawImage(ResourceManager.goodTankR, x, y, null);
-                break;
-            case U:
-                graphics.drawImage(ResourceManager.goodTankU, x, y, null);
-                break;
-            case D:
-                graphics.drawImage(ResourceManager.goodTankD, x, y, null);
-                break;
+
+        if (this.tankGroup == TankGroup.GOOD) {
+            switch (direction) {
+                case L:
+                    graphics.drawImage(ResourceManager.goodTankL, x, y, null);
+                    break;
+                case R:
+                    graphics.drawImage(ResourceManager.goodTankR, x, y, null);
+                    break;
+                case U:
+                    graphics.drawImage(ResourceManager.goodTankU, x, y, null);
+                    break;
+                case D:
+                    graphics.drawImage(ResourceManager.goodTankD, x, y, null);
+                    break;
+            }
+        }
+
+        if (this.tankGroup == TankGroup.BAD) {
+            switch (direction) {
+                case L:
+                    graphics.drawImage(ResourceManager.badTankL, x, y, null);
+                    break;
+                case R:
+                    graphics.drawImage(ResourceManager.badTankR, x, y, null);
+                    break;
+                case U:
+                    graphics.drawImage(ResourceManager.badTankU, x, y, null);
+                    break;
+                case D:
+                    graphics.drawImage(ResourceManager.badTankD, x, y, null);
+                    break;
+            }
         }
         move();
     }

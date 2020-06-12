@@ -32,10 +32,12 @@ public class TankFrame extends Frame {
     private static int GAME_WIDTH = 800;
     private static int GAME_HEIGHT = 800;
     private Tank myTank;
+    private Tank enemyTank;
     private Image offScreenImage = null;
 
     public TankFrame(){
-        this.myTank = new Tank(100, 100, Direction.R);
+        this.myTank = new Tank(100, 100, Direction.R, TankGroup.GOOD);
+        this.enemyTank = new Tank(200, 200, Direction.L, TankGroup.BAD);
         this.setTitle("坦克大战");
         this.setLocation(200, 200);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
@@ -56,7 +58,7 @@ public class TankFrame extends Frame {
 
         Graphics gOffScreen = offScreenImage.getGraphics();
         Color c = gOffScreen.getColor();
-        gOffScreen.setColor(Color.BLACK);
+        gOffScreen.setColor(Color.WHITE);
         gOffScreen.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
         gOffScreen.setColor(c);
         paint(gOffScreen);
@@ -70,6 +72,7 @@ public class TankFrame extends Frame {
     @Override
     public void paint(Graphics graphics) {
         myTank.paint(graphics);
+        enemyTank.paint(graphics);
     }
 
     /**
