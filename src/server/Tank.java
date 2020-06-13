@@ -18,6 +18,8 @@ package server;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
+import static server.Constant.*;
+
 /**
  * <p> Title: </p>
  *
@@ -28,7 +30,6 @@ import java.awt.event.KeyEvent;
  * @create: 2020/6/12 10:36
  */
 public class Tank {
-    public static final int SPEED = 5;
     private int x;
     private int y;
     private Direction direction;
@@ -38,12 +39,18 @@ public class Tank {
     private boolean bD;
     private boolean moving;
     private TankGroup tankGroup;
+    private boolean live;
+
+    public boolean isLive() {
+        return live;
+    }
 
     public Tank(int x, int y, Direction direction, TankGroup tankGroup) {
         this.x = x;
         this.y = y;
         this.direction = direction;
         this.tankGroup = tankGroup;
+        this.live = true;
     }
 
     public void paint(Graphics graphics) {
@@ -81,7 +88,7 @@ public class Tank {
                     break;
             }
         }
-        int[] move = Direction.move(this.moving, x, y, SPEED, direction);
+        int[] move = Direction.move(this.moving, x, y, TANK_MOVE_SPEED, direction);
         if (move != null) {
             x = move[0];
             y = move[1];
@@ -148,8 +155,20 @@ public class Tank {
     }
 
     public void fire() {
-        int bulletX = x + ResourceManager.goodTankU.getWidth() / 2 - ResourceManager.bulletU.getWidth() / 2;
-        int bulletY = y + ResourceManager.goodTankU.getHeight() / 2 - ResourceManager.bulletU.getHeight() / 2;
+        int bulletX = x + TANK_IMAGE_WITH / 2 - BULLET_IMAGE_WITH / 2;
+        int bulletY = y + TANK_IMAGE_HEIGHT / 2 - BULLET_IMAGE_HEIGHT / 2;
         TankFrame.INSTANCE.addBullet(new Bullet(bulletX, bulletY, direction, tankGroup));
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void die() {
+        this.live = false;
     }
 }

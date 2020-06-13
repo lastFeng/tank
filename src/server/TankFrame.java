@@ -85,14 +85,21 @@ public class TankFrame extends Frame {
         graphics.drawString("bullets:" + bulletList.size(), 0, 50);
         graphics.setColor(color);
 
-        myTank.paint(graphics);
-        enemyTank.paint(graphics);
+        if (myTank.isLive()) {
+            myTank.paint(graphics);
+        }
+
+        if (enemyTank.isLive()) {
+            enemyTank.paint(graphics);
+        }
 
         for (int i = 0; i < bulletList.size(); i++) {
-            if (bulletList.get(i).isOutOfBound()) {
-                bulletList.remove(bulletList.get(i));
+            Bullet bullet = bulletList.get(i);
+            bullet.collideWithTank(enemyTank);
+            if (bullet.isOutOfBound()) {
+                bulletList.remove(bullet);
             } else {
-                bulletList.get(i).paint(graphics);
+                bullet.paint(graphics);
             }
         }
     }

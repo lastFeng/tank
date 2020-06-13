@@ -17,6 +17,8 @@ package server;
 
 import java.awt.*;
 
+import static server.Constant.*;
+
 /**
  * <p> Title: </p>
  *
@@ -32,7 +34,6 @@ public class Bullet {
     private Direction direction;
     private TankGroup tankGroup;
     private boolean outOfBound;
-    public static final int SPEED = 10;
 
     public Bullet(int x, int y, Direction direction, TankGroup tankGroup) {
         this.x = x;
@@ -58,7 +59,7 @@ public class Bullet {
                 graphics.drawImage(ResourceManager.bulletD, x, y, null);
                 break;
         }
-        int[] move = Direction.move(true, x, y, SPEED, direction);
+        int[] move = Direction.move(true, x, y, BULLET_MOVE_SPEED , direction);
         if (move != null) {
             x = move[0];
             y = move[1];
@@ -76,5 +77,27 @@ public class Bullet {
 
     public boolean isOutOfBound() {
         return outOfBound;
+    }
+
+    /**
+     * 简单的碰撞检测,两个长方形是否相交
+     * @param tank
+     * @return
+     */
+    public void collideWithTank(Tank tank) {
+        if (!tank.isLive()) {
+            return;
+        }
+        Rectangle bulletRect = new Rectangle(x, y, BULLET_IMAGE_WITH, BULLET_IMAGE_HEIGHT);
+        Rectangle tankRect = new Rectangle(tank.getX(), tank.getY(), TANK_IMAGE_WITH, TANK_IMAGE_HEIGHT);
+
+        if (bulletRect.intersects(tankRect)) {
+            this.die();
+            tank.die();
+        }
+    }
+
+    private void die() {
+        this.outOfBound = true;
     }
 }
