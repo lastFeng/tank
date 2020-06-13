@@ -34,20 +34,22 @@ public class TankFrame extends Frame {
 
     public static final TankFrame INSTANCE = new TankFrame();
 
-    private static int GAME_WIDTH = 800;
-    private static int GAME_HEIGHT = 800;
+    public static int GAME_WIDTH = 800;
+    public static int GAME_HEIGHT = 800;
     private Tank myTank;
     private Tank enemyTank;
-    private List<Bullet> bulletList = new ArrayList<>();
+    private List<Bullet> bulletList;
     private Image offScreenImage = null;
 
     private TankFrame(){
-        this.myTank = new Tank(100, 100, Direction.R, TankGroup.GOOD);
-        this.enemyTank = new Tank(200, 200, Direction.L, TankGroup.BAD);
+
         this.setTitle("坦克大战");
         this.setLocation(200, 200);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
         this.addKeyListener(new TankKeyListener());
+        this.myTank = new Tank(100, 100, Direction.R, TankGroup.GOOD);
+        this.enemyTank = new Tank(200, 200, Direction.L, TankGroup.BAD);
+        this.bulletList = new ArrayList<>();
     }
 
     /**
@@ -77,10 +79,21 @@ public class TankFrame extends Frame {
      */
     @Override
     public void paint(Graphics graphics) {
+        // 这边展示子弹的个数，需要进行边界检查，子弹从飞去游戏区后，从list移除
+        Color color = graphics.getColor();
+        graphics.setColor(Color.BLACK);
+        graphics.drawString("bullets:" + bulletList.size(), 0, 50);
+        graphics.setColor(color);
+
         myTank.paint(graphics);
         enemyTank.paint(graphics);
-        if (!bulletList.isEmpty()) {
-            bulletList.forEach(bullet -> bullet.paint(graphics));
+
+        for (int i = 0; i < bulletList.size(); i++) {
+            if (bulletList.get(i).isOutOfBound()) {
+                bulletList.remove(bulletList.get(i));
+            } else {
+                bulletList.get(i).paint(graphics);
+            }
         }
     }
 

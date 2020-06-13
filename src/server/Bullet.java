@@ -31,6 +31,7 @@ public class Bullet {
     private int y;
     private Direction direction;
     private TankGroup tankGroup;
+    private boolean outOfBound;
     public static final int SPEED = 10;
 
     public Bullet(int x, int y, Direction direction, TankGroup tankGroup) {
@@ -38,6 +39,7 @@ public class Bullet {
         this.y = y;
         this.direction = direction;
         this.tankGroup = tankGroup;
+        this.outOfBound = outOfBoundChecked();
     }
 
     public void paint(Graphics graphics) {
@@ -61,6 +63,18 @@ public class Bullet {
             x = move[0];
             y = move[1];
         }
+
+        this.outOfBound = outOfBoundChecked();
     }
 
+    private boolean outOfBoundChecked() {
+        if (x < 0 || y < 30 || x > TankFrame.GAME_WIDTH || y > TankFrame.GAME_HEIGHT) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isOutOfBound() {
+        return outOfBound;
+    }
 }

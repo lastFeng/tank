@@ -148,6 +148,8 @@ public class Tank {
     }
 
     public void fire() {
-        TankFrame.INSTANCE.addBullet(new Bullet(x, y, direction, tankGroup));
+        int bulletX = x + ResourceManager.goodTankU.getWidth() / 2 - ResourceManager.bulletU.getWidth() / 2;
+        int bulletY = y + ResourceManager.goodTankU.getHeight() / 2 - ResourceManager.bulletU.getHeight() / 2;
+        TankFrame.INSTANCE.addBullet(new Bullet(bulletX, bulletY, direction, tankGroup));
     }
 }
