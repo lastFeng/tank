@@ -36,8 +36,8 @@ public class TankFrame extends Frame {
 
     public static int GAME_WIDTH = 800;
     public static int GAME_HEIGHT = 800;
-    private Tank myTank;
-    private Tank enemyTank;
+    private PlayerTank myPlayerTank;
+    private NpcTank enemyPlayerTank;
     private List<Bullet> bulletList;
     private Image offScreenImage = null;
 
@@ -47,8 +47,8 @@ public class TankFrame extends Frame {
         this.setLocation(200, 200);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
         this.addKeyListener(new TankKeyListener());
-        this.myTank = new Tank(100, 100, Direction.R, TankGroup.GOOD);
-        this.enemyTank = new Tank(200, 200, Direction.L, TankGroup.BAD);
+        this.myPlayerTank = new PlayerTank(100, 100, Direction.R);
+        this.enemyPlayerTank = new NpcTank(200, 200, Direction.L);
         this.bulletList = new ArrayList<>();
     }
 
@@ -85,17 +85,17 @@ public class TankFrame extends Frame {
         graphics.drawString("bullets:" + bulletList.size(), 0, 50);
         graphics.setColor(color);
 
-        if (myTank.isLive()) {
-            myTank.paint(graphics);
+        if (myPlayerTank.isLive()) {
+            myPlayerTank.paint(graphics);
         }
 
-        if (enemyTank.isLive()) {
-            enemyTank.paint(graphics);
+        if (enemyPlayerTank.isLive()) {
+            enemyPlayerTank.paint(graphics);
         }
 
         for (int i = 0; i < bulletList.size(); i++) {
             Bullet bullet = bulletList.get(i);
-            bullet.collideWithTank(enemyTank);
+            bullet.collideWithTank(enemyPlayerTank);
             if (bullet.isOutOfBound()) {
                 bulletList.remove(bullet);
             } else {
@@ -110,12 +110,12 @@ public class TankFrame extends Frame {
     private class TankKeyListener extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent event) {
-            myTank.keyPressed(event);
+            myPlayerTank.keyPressed(event);
         }
 
         @Override
         public void keyReleased(KeyEvent event) {
-            myTank.keyReleased(event);
+            myPlayerTank.keyReleased(event);
         }
     }
 

@@ -17,7 +17,7 @@ package images;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import server.Tank;
+import server.PlayerTank;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -51,7 +51,7 @@ public class ImagesTest {
     @Test
     public void testRotateImage() {
         try {
-            BufferedImage tank = ImageIO.read(Tank.class.getClassLoader().getResourceAsStream("images/GoodTank1.png"));
+            BufferedImage tank = ImageIO.read(PlayerTank.class.getClassLoader().getResourceAsStream("images/GoodTank1.png"));
             Assertions.assertNotNull(tank);
             tank = rotateImage(tank, 90);
             Assertions.assertNotNull(tank);
