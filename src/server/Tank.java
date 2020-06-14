@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 
 import static server.Constant.*;
 import static server.Constant.BULLET_IMAGE_HEIGHT;
+import static server.Direction.outOfBoundChecked;
 
 /**
  * @author guowf
@@ -24,6 +25,8 @@ public class Tank {
     protected boolean moving;
     protected TankGroup tankGroup;
     protected boolean live;
+    protected int oldX;
+    protected int oldY;
 
     public boolean isLive() {
         return live;
@@ -35,10 +38,58 @@ public class Tank {
         this.direction = direction;
         this.live = true;
         this.tankGroup = TankGroup.BAD;
+        backUp();
     }
 
     public void paint(Graphics graphics){
+        if (this.tankGroup == TankGroup.GOOD) {
+            switch (direction) {
+                case L:
+                    graphics.drawImage(ResourceManager.goodTankL, x, y, null);
+                    break;
+                case R:
+                    graphics.drawImage(ResourceManager.goodTankR, x, y, null);
+                    break;
+                case U:
+                    graphics.drawImage(ResourceManager.goodTankU, x, y, null);
+                    break;
+                case D:
+                    graphics.drawImage(ResourceManager.goodTankD, x, y, null);
+                    break;
+            }
+        }
 
+        if (this.tankGroup == TankGroup.BAD) {
+            switch (direction) {
+                case L:
+                    graphics.drawImage(ResourceManager.badTankL, x, y, null);
+                    break;
+                case R:
+                    graphics.drawImage(ResourceManager.badTankR, x, y, null);
+                    break;
+                case U:
+                    graphics.drawImage(ResourceManager.badTankU, x, y, null);
+                    break;
+                case D:
+                    graphics.drawImage(ResourceManager.badTankD, x, y, null);
+                    break;
+            }
+        }
+
+        boolean boundChecked = outOfBoundChecked(x, y, TankFrame.GAME_WIDTH - TANK_IMAGE_WITH, TankFrame.GAME_HEIGHT - TANK_IMAGE_HEIGHT);
+        if (boundChecked) {
+            backUp();
+        }
+
+        int[] move = Direction.move(this.moving, x, y, TANK_MOVE_SPEED, direction);
+        if (move != null && !boundChecked) {
+            x = move[0];
+            y = move[1];
+        }
+
+        if (boundChecked) {
+            restore();
+        }
     }
 
     public void keyPressed(KeyEvent event) {
@@ -116,5 +167,15 @@ public class Tank {
 
     public void die() {
         this.live = false;
+    }
+
+    public void restore() {
+        this.x = oldX;
+        this.y = oldY;
+    }
+
+    public void backUp() {
+        this.oldX = x;
+        this.oldY = y;
     }
 }

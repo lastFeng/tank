@@ -35,29 +35,4 @@ public class PlayerTank extends Tank{
         super(x, y, direction);
         this.tankGroup = TankGroup.GOOD;
     }
-
-    @Override
-    public void paint(Graphics graphics) {
-
-        switch (direction) {
-            case L:
-                graphics.drawImage(ResourceManager.goodTankL, x, y, null);
-                break;
-            case R:
-                graphics.drawImage(ResourceManager.goodTankR, x, y, null);
-                break;
-            case U:
-                graphics.drawImage(ResourceManager.goodTankU, x, y, null);
-                break;
-            case D:
-                graphics.drawImage(ResourceManager.goodTankD, x, y, null);
-                break;
-        }
-
-        int[] move = Direction.move(this.moving, x, y, TANK_MOVE_SPEED, direction);
-        if (move != null) {
-            x = move[0];
-            y = move[1];
-        }
-    }
 }

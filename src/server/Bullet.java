@@ -18,6 +18,7 @@ package server;
 import java.awt.*;
 
 import static server.Constant.*;
+import static server.Direction.outOfBoundChecked;
 
 /**
  * <p> Title: </p>
@@ -40,39 +41,34 @@ public class Bullet {
         this.y = y;
         this.direction = direction;
         this.tankGroup = tankGroup;
-        this.outOfBound = outOfBoundChecked();
+        this.outOfBound = false;
     }
 
     public void paint(Graphics graphics) {
 
-        switch (direction) {
-            case L:
-                graphics.drawImage(ResourceManager.bulletL, x, y, null);
-                break;
-            case R:
-                graphics.drawImage(ResourceManager.bulletR, x, y, null);
-                break;
-            case U:
-                graphics.drawImage(ResourceManager.bulletU, x, y, null);
-                break;
-            case D:
-                graphics.drawImage(ResourceManager.bulletD, x, y, null);
-                break;
-        }
-        int[] move = Direction.move(true, x, y, BULLET_MOVE_SPEED , direction);
-        if (move != null) {
-            x = move[0];
-            y = move[1];
-        }
+        if (!outOfBound) {
+            switch (direction) {
+                case L:
+                    graphics.drawImage(ResourceManager.bulletL, x, y, null);
+                    break;
+                case R:
+                    graphics.drawImage(ResourceManager.bulletR, x, y, null);
+                    break;
+                case U:
+                    graphics.drawImage(ResourceManager.bulletU, x, y, null);
+                    break;
+                case D:
+                    graphics.drawImage(ResourceManager.bulletD, x, y, null);
+                    break;
+            }
+            int[] move = Direction.move(true, x, y, BULLET_MOVE_SPEED, direction);
+            if (move != null) {
+                x = move[0];
+                y = move[1];
+            }
 
-        this.outOfBound = outOfBoundChecked();
-    }
-
-    private boolean outOfBoundChecked() {
-        if (x < 0 || y < 30 || x > TankFrame.GAME_WIDTH || y > TankFrame.GAME_HEIGHT) {
-            return true;
+            this.outOfBound = outOfBoundChecked(x, y, TankFrame.GAME_WIDTH, TankFrame.GAME_HEIGHT);
         }
-        return false;
     }
 
     public boolean isOutOfBound() {
@@ -85,7 +81,11 @@ public class Bullet {
      * @return
      */
     public void collideWithTank(Tank tank) {
-        if (!tank.isLive()) {
+        if (this.outOfBound || !tank.isLive()) {
+            return;
+        }
+
+        if (this.tankGroup == tank.tankGroup) {
             return;
         }
         Rectangle bulletRect = new Rectangle(x, y, BULLET_IMAGE_WITH, BULLET_IMAGE_HEIGHT);

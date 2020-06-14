@@ -37,8 +37,8 @@ public class TankFrame extends Frame {
     public static int GAME_WIDTH = 800;
     public static int GAME_HEIGHT = 800;
     private PlayerTank myPlayerTank;
-    private NpcTank enemyPlayerTank;
-    private List<Bullet> bulletList;
+    private List<Bullet> playerBullets;
+    private List<NpcTank> npcTanks;
     private Image offScreenImage = null;
 
     private TankFrame(){
@@ -47,9 +47,18 @@ public class TankFrame extends Frame {
         this.setLocation(200, 200);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
         this.addKeyListener(new TankKeyListener());
+
+        initGames();
+    }
+
+    private void initGames() {
         this.myPlayerTank = new PlayerTank(100, 100, Direction.R);
-        this.enemyPlayerTank = new NpcTank(200, 200, Direction.L);
-        this.bulletList = new ArrayList<>();
+        this.playerBullets = new ArrayList<>();
+        this.npcTanks = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            npcTanks.add(new NpcTank(100 + 50 * i, 200, Direction.randDirection()));
+        }
     }
 
     /**
@@ -82,24 +91,26 @@ public class TankFrame extends Frame {
         // 这边展示子弹的个数，需要进行边界检查，子弹从飞去游戏区后，从list移除
         Color color = graphics.getColor();
         graphics.setColor(Color.BLACK);
-        graphics.drawString("bullets:" + bulletList.size(), 0, 50);
+        graphics.drawString("bullets:" + playerBullets.size(), 0, 50);
         graphics.setColor(color);
 
         if (myPlayerTank.isLive()) {
             myPlayerTank.paint(graphics);
         }
 
-        if (enemyPlayerTank.isLive()) {
-            enemyPlayerTank.paint(graphics);
-        }
+        for (NpcTank enemyPlayerTank : npcTanks) {
+            if (enemyPlayerTank.isLive()) {
+                enemyPlayerTank.paint(graphics);
+            }
 
-        for (int i = 0; i < bulletList.size(); i++) {
-            Bullet bullet = bulletList.get(i);
-            bullet.collideWithTank(enemyPlayerTank);
-            if (bullet.isOutOfBound()) {
-                bulletList.remove(bullet);
-            } else {
-                bullet.paint(graphics);
+            for (int i = 0; i < playerBullets.size(); i++) {
+                Bullet bullet = playerBullets.get(i);
+                bullet.collideWithTank(enemyPlayerTank);
+                if (bullet.isOutOfBound()) {
+                    playerBullets.remove(bullet);
+                } else {
+                    bullet.paint(graphics);
+                }
             }
         }
     }
@@ -120,6 +131,6 @@ public class TankFrame extends Frame {
     }
 
     public void addBullet(Bullet bullet) {
-        bulletList.add(bullet);
+        playerBullets.add(bullet);
     }
 }

@@ -17,6 +17,7 @@ package server;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.Random;
 
 import static server.Constant.*;
 
@@ -31,33 +32,36 @@ import static server.Constant.*;
  */
 public class NpcTank extends Tank{
 
+    private Random random = new Random();
+
     public NpcTank(int x, int y, Direction direction) {
         super(x, y, direction);
         this.tankGroup = TankGroup.BAD;
+        this.moving = true;
     }
 
     @Override
     public void paint(Graphics graphics) {
 
-        switch (direction) {
-            case L:
-                graphics.drawImage(ResourceManager.badTankL, x, y, null);
-                break;
-            case R:
-                graphics.drawImage(ResourceManager.badTankR, x, y, null);
-                break;
-            case U:
-                graphics.drawImage(ResourceManager.badTankU, x, y, null);
-                break;
-            case D:
-                graphics.drawImage(ResourceManager.badTankD, x, y, null);
-                break;
+        super.paint(graphics);
+        randomDirection();
+        if (random.nextInt(100) > 90) {
+            fire();
         }
+    }
 
-        int[] move = Direction.move(this.moving, x, y, TANK_MOVE_SPEED, direction);
-        if (move != null) {
-            x = move[0];
-            y = move[1];
+    @Override
+    public void keyPressed(KeyEvent event) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent event) {
+    }
+
+    private void randomDirection() {
+        if (random.nextInt(100) > 90) {
+            direction = Direction.randDirection();
         }
     }
 

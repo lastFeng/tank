@@ -15,6 +15,8 @@
  */
 package server;
 
+import java.util.Random;
+
 /**
  * <p> Title: </p>
  *
@@ -26,6 +28,8 @@ package server;
  */
 public enum  Direction {
     L, R, U, D;
+
+    private static Random random = new Random();
     public static int[] move(final boolean moving, int x, int y, final int SPEED, Direction direction) {
         if (!moving) {
             return null;
@@ -45,7 +49,17 @@ public enum  Direction {
                 y += SPEED;
                 break;
         }
-
         return new int[] {x, y};
+    }
+
+    public static boolean outOfBoundChecked(final int x, final int y, final int width, final int height) {
+        if (x < 0 || y < 30 || x > width || y > height) {
+            return true;
+        }
+        return false;
+    }
+
+    public static Direction randDirection() {
+        return values()[random.nextInt(values().length)];
     }
 }
