@@ -38,7 +38,8 @@ public class Tank {
         this.direction = direction;
         this.live = true;
         this.tankGroup = TankGroup.BAD;
-        backUp();
+        this.oldX = x;
+        this.oldY = y;
     }
 
     public void paint(Graphics graphics){
@@ -76,19 +77,17 @@ public class Tank {
             }
         }
 
-        boolean boundChecked = outOfBoundChecked(x, y, TankFrame.GAME_WIDTH - TANK_IMAGE_WITH, TankFrame.GAME_HEIGHT - TANK_IMAGE_HEIGHT);
-        if (boundChecked) {
-            backUp();
-        }
 
         int[] move = Direction.move(this.moving, x, y, TANK_MOVE_SPEED, direction);
-        if (move != null && !boundChecked) {
-            x = move[0];
-            y = move[1];
-        }
 
-        if (boundChecked) {
-            restore();
+        if (move != null) {
+            boolean boundChecked = outOfBoundChecked(move[0], move[1], TankFrame.GAME_WIDTH - TANK_IMAGE_WITH, TankFrame.GAME_HEIGHT - TANK_IMAGE_HEIGHT);
+
+            if (!boundChecked) {
+                x = move[0];
+                y = move[1];
+            }
+
         }
     }
 
@@ -167,15 +166,5 @@ public class Tank {
 
     public void die() {
         this.live = false;
-    }
-
-    public void restore() {
-        this.x = oldX;
-        this.y = oldY;
-    }
-
-    public void backUp() {
-        this.oldX = x;
-        this.oldY = y;
     }
 }
