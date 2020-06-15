@@ -40,6 +40,7 @@ public class TankFrame extends Frame {
     private List<Bullet> playerBullets;
     private List<NpcTank> npcTanks;
     private List<Bullet> npcBullets;
+    private List<Explode> explodes;
     private Image offScreenImage = null;
 
     private TankFrame(){
@@ -53,13 +54,14 @@ public class TankFrame extends Frame {
     }
 
     private void initGames() {
-        this.myPlayerTank = new PlayerTank(100, 100, Direction.R);
+        this.myPlayerTank = new PlayerTank(400, 700, Direction.U);
         this.playerBullets = new ArrayList<>();
         this.npcTanks = new ArrayList<>();
         this.npcBullets = new ArrayList<>();
+        this.explodes = new ArrayList<>();
 
         for (int i = 0; i < 2; i++) {
-            npcTanks.add(new NpcTank(100 + 50 * i, 200, Direction.randDirection()));
+            npcTanks.add(new NpcTank(80 * i, 50, Direction.randDirection()));
         }
     }
 
@@ -94,6 +96,7 @@ public class TankFrame extends Frame {
         Color color = graphics.getColor();
         graphics.setColor(Color.BLACK);
         graphics.drawString("bullets:" + playerBullets.size(), 0, 50);
+        graphics.drawString("enemies:" + npcBullets.size(), 0, 100);
         graphics.setColor(color);
 
         if (myPlayerTank.isLive()) {
@@ -109,6 +112,16 @@ public class TankFrame extends Frame {
 
             paintBullet(playerBullets, enemyPlayerTank, graphics);
         }
+
+        for (int i = 0; i < explodes.size(); i++) {
+            Explode explode = explodes.get(i);
+            if (explode.isFinished()) {
+                explodes.remove(explode);
+            } else {
+                explode.paint(graphics);
+            }
+        }
+
     }
 
     /**
@@ -135,6 +148,10 @@ public class TankFrame extends Frame {
         }
     }
 
+    public void addExplode(Explode explode) {
+        explodes.add(explode);
+    }
+
     private void paintBullet(List<Bullet> bullets, Tank tank, Graphics graphics) {
         for (int i = 0; i < bullets.size(); i++) {
             Bullet bullet = bullets.get(i);
@@ -146,5 +163,4 @@ public class TankFrame extends Frame {
             }
         }
     }
-
 }

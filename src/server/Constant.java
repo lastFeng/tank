@@ -13,4 +13,6 @@ public class Constant {
     public static final int BULLET_IMAGE_HEIGHT = ResourceManager.bulletU.getHeight();
     public static final int TANK_MOVE_SPEED = 5;
     public static final int BULLET_MOVE_SPEED = 10;
+    public static final int EXPLODE_IMAGE_WIDTH = ResourceManager.explodes[0].getWidth();
+    public static final int EXPLODE_IMAGE_HEIGHT = ResourceManager.explodes[0].getHeight();
 }
