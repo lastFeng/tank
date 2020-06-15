@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 import static server.Constant.*;
-import static server.Constant.BULLET_IMAGE_HEIGHT;
 import static server.Direction.outOfBoundChecked;
 
 /**
@@ -27,6 +26,7 @@ public class Tank {
     protected boolean live;
     protected int oldX;
     protected int oldY;
+    protected Bullet tankBullet;
 
     public boolean isLive() {
         return live;
@@ -151,9 +151,11 @@ public class Tank {
     }
 
     public void fire() {
+        TankFrame tankFrame = TankFrame.INSTANCE;
         int bulletX = x + TANK_IMAGE_WITH / 2 - BULLET_IMAGE_WITH / 2;
         int bulletY = y + TANK_IMAGE_HEIGHT / 2 - BULLET_IMAGE_HEIGHT / 2;
-        TankFrame.INSTANCE.addBullet(new Bullet(bulletX, bulletY, direction, tankGroup));
+        tankBullet = new Bullet(bulletX, bulletY, direction, tankGroup);
+        tankFrame.addBullet(tankBullet, this);
     }
 
     public int getX() {

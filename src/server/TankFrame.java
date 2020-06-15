@@ -39,6 +39,7 @@ public class TankFrame extends Frame {
     private PlayerTank myPlayerTank;
     private List<Bullet> playerBullets;
     private List<NpcTank> npcTanks;
+    private List<Bullet> npcBullets;
     private Image offScreenImage = null;
 
     private TankFrame(){
@@ -55,8 +56,9 @@ public class TankFrame extends Frame {
         this.myPlayerTank = new PlayerTank(100, 100, Direction.R);
         this.playerBullets = new ArrayList<>();
         this.npcTanks = new ArrayList<>();
+        this.npcBullets = new ArrayList<>();
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             npcTanks.add(new NpcTank(100 + 50 * i, 200, Direction.randDirection()));
         }
     }
@@ -98,20 +100,14 @@ public class TankFrame extends Frame {
             myPlayerTank.paint(graphics);
         }
 
+        paintBullet(npcBullets, myPlayerTank, graphics);
+
         for (NpcTank enemyPlayerTank : npcTanks) {
             if (enemyPlayerTank.isLive()) {
                 enemyPlayerTank.paint(graphics);
             }
 
-            for (int i = 0; i < playerBullets.size(); i++) {
-                Bullet bullet = playerBullets.get(i);
-                bullet.collideWithTank(enemyPlayerTank);
-                if (bullet.isOutOfBound()) {
-                    playerBullets.remove(bullet);
-                } else {
-                    bullet.paint(graphics);
-                }
-            }
+            paintBullet(playerBullets, enemyPlayerTank, graphics);
         }
     }
 
@@ -130,7 +126,25 @@ public class TankFrame extends Frame {
         }
     }
 
-    public void addBullet(Bullet bullet) {
-        playerBullets.add(bullet);
+    public void addBullet(Bullet bullet, Tank tank) {
+        if (tank.tankGroup == TankGroup.GOOD) {
+            playerBullets.add(bullet);
+        }
+        if (tank.tankGroup == TankGroup.BAD) {
+            npcBullets.add(bullet);
+        }
     }
+
+    private void paintBullet(List<Bullet> bullets, Tank tank, Graphics graphics) {
+        for (int i = 0; i < bullets.size(); i++) {
+            Bullet bullet = bullets.get(i);
+            bullet.collideWithTank(tank);
+            if (bullet.isOutOfBound()) {
+                bullets.remove(bullet);
+            } else {
+                bullet.paint(graphics);
+            }
+        }
+    }
+
 }
