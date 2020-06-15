@@ -38,6 +38,7 @@ public class Explode {
         this.y = y;
         this.step = 0;
         this.finished = false;
+        new Thread(() -> new Audio("audio/explode.wav").play()).start();
     }
 
     public void paint(Graphics graphics) {
