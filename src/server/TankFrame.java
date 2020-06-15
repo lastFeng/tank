@@ -60,7 +60,9 @@ public class TankFrame extends Frame {
         this.npcBullets = new ArrayList<>();
         this.explodes = new ArrayList<>();
 
-        for (int i = 0; i < 2; i++) {
+        int initEnemyTank = Integer.valueOf(PropertyManager.get("initTankCount"));
+
+        for (int i = 0; i < initEnemyTank; i++) {
             npcTanks.add(new NpcTank(80 * i, 50, Direction.randDirection()));
         }
     }
