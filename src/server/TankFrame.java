@@ -60,7 +60,8 @@ public class TankFrame extends Frame {
 
     private void initGames() {
         this.objects = new ArrayList<>();
-        this.objects.add(new PlayerTank(400, 700, Direction.U));
+        this.myPlayerTank = new PlayerTank(400, 700, Direction.U);
+        this.objects.add(myPlayerTank);
         int initEnemyTank = Integer.valueOf(PropertyManager.get("initTankCount"));
         for (int i = 0; i < initEnemyTank; i++) {
             this.objects.add(new NpcTank(80 * i, 50, Direction.randDirection()));
@@ -106,9 +107,6 @@ public class TankFrame extends Frame {
                 object.paint(graphics);
             } else {
                 objects.remove(object);
-            }
-            if (object instanceof PlayerTank) {
-                myPlayerTank = (PlayerTank) object;
             }
         }
     }
