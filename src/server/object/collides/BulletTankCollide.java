@@ -16,6 +16,8 @@
 package server.object.collides;
 
 import server.object.AbstractGameObject;
+import server.object.Bullet;
+import server.object.Tank;
 
 /**
  * <p> Title: </p>
@@ -24,8 +26,17 @@ import server.object.AbstractGameObject;
  *
  * @author: Guo Weifeng
  * @version: 1.0
- * @create: 2020/6/16 10:03
+ * @create: 2020/6/16 14:00
  */
-public interface Collides {
-    void collide(AbstractGameObject one, AbstractGameObject two);
+public class BulletTankCollide implements Collides {
+    @Override
+    public void collide(AbstractGameObject one, AbstractGameObject two) {
+        if (one instanceof Bullet && two instanceof Tank) {
+            Bullet bullet = (Bullet) one;
+            Tank tank = (Tank) two;
+            bullet.collideWithTank(tank);
+        } else if (one instanceof Tank && two instanceof Bullet) {
+            collide(two, one);
+        }
+    }
 }

@@ -19,7 +19,6 @@ import server.Direction;
 import server.ResourceManager;
 import server.TankFrame;
 import server.TankGroup;
-import server.object.collides.Collides;
 
 import java.awt.*;
 
@@ -83,27 +82,23 @@ public class Bullet extends AbstractGameObject{
 
     /**
      * 简单的碰撞检测,两个长方形是否相交
-     * @param collides
+     * @param tank
      * @return
      */
-    public void collideWithTank(Collides collides) {
-        if (!this.live || !collides.isLive()) {
+    public void collideWithTank(Tank tank) {
+        if (!this.live || !tank.isLive()) {
             return;
         }
-
-        if (collides instanceof Tank) {
-            Tank tank = (Tank) collides;
-            if (this.tankGroup == tank.tankGroup) {
-                return;
-            }
+        if (this.tankGroup == tank.tankGroup) {
+            return;
         }
         Rectangle bulletRect = new Rectangle(x, y, BULLET_IMAGE_WITH, BULLET_IMAGE_HEIGHT);
-        Rectangle tankRect = new Rectangle(collides.getX(), collides.getY(), TANK_IMAGE_WITH, TANK_IMAGE_HEIGHT);
+        Rectangle tankRect = new Rectangle(tank.getX(), tank.getY(), TANK_IMAGE_WITH, TANK_IMAGE_HEIGHT);
 
         if (bulletRect.intersects(tankRect)) {
             this.die();
-            collides.die();
-            TankFrame.INSTANCE.addGameObject(new Explode(collides.getX(), collides.getY()));
+            tank.die();
+            TankFrame.INSTANCE.addGameObject(new Explode(tank.getX(), tank.getY()));
         }
     }
 

@@ -16,10 +16,9 @@
 package server;
 
 import server.object.AbstractGameObject;
-import server.object.Bullet;
 import server.object.NpcTank;
 import server.object.PlayerTank;
-import server.object.Tank;
+import server.object.collides.BulletTankCollide;
 import server.object.collides.Collides;
 
 import java.awt.*;
@@ -46,6 +45,7 @@ public class TankFrame extends Frame {
     private PlayerTank myPlayerTank;
     private List<AbstractGameObject> objects;
     private Image offScreenImage = null;
+    private Collides bulletCollidesTank;
 
     private TankFrame(){
 
@@ -53,6 +53,7 @@ public class TankFrame extends Frame {
         this.setLocation(200, 200);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
         this.addKeyListener(new TankKeyListener());
+        this.bulletCollidesTank = new BulletTankCollide();
 
         initGames();
     }
@@ -97,23 +98,17 @@ public class TankFrame extends Frame {
         for (int i = 0; i < objects.size(); i++) {
             AbstractGameObject object = objects.get(i);
 
-            if (object instanceof Bullet) {
-                for (int j = 0; j < objects.size(); j++) {
-                    AbstractGameObject collide = objects.get(j);
-                    if (collide instanceof Collides) {
-                        ((Bullet)object).collideWithTank((Collides)collide);
-                    }
-                }
-            }
-
-            if (object instanceof PlayerTank) {
-                myPlayerTank = (PlayerTank) object;
+            for (int j = 0; j < objects.size(); j++) {
+                bulletCollidesTank.collide(object, objects.get(j));
             }
 
             if (object.isLive()) {
                 object.paint(graphics);
             } else {
                 objects.remove(object);
+            }
+            if (object instanceof PlayerTank) {
+                myPlayerTank = (PlayerTank) object;
             }
         }
     }
@@ -135,17 +130,5 @@ public class TankFrame extends Frame {
 
     public void addGameObject(AbstractGameObject object) {
         objects.add(object);
-    }
-
-    private void paintBullet(List<Bullet> bullets, Tank tank, Graphics graphics) {
-        for (int i = 0; i < bullets.size(); i++) {
-            Bullet bullet = bullets.get(i);
-            bullet.collideWithTank(tank);
-            if (bullet.isOutOfBound()) {
-                bullets.remove(bullet);
-            } else {
-                bullet.paint(graphics);
-            }
-        }
     }
 }

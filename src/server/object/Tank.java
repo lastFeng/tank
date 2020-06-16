@@ -5,7 +5,6 @@ import server.PropertyManager;
 import server.ResourceManager;
 import server.TankFrame;
 import server.TankGroup;
-import server.object.collides.Collides;
 import server.strategy.DefaultFireStrategy;
 import server.strategy.FireStrategy;
 
@@ -23,7 +22,7 @@ import static server.Direction.outOfBoundChecked;
  * @date created in 2020/6/14 16:01
  * @description:
  */
-public class Tank extends AbstractGameObject implements Collides {
+public class Tank extends AbstractGameObject {
 
     protected int x;
     protected int y;
@@ -176,17 +175,10 @@ public class Tank extends AbstractGameObject implements Collides {
         fireStrategy.fire(this);
     }
 
-    @Override
-    public boolean isLive() {
-        return this.live;
-    }
-
-    @Override
     public int getX() {
         return x;
     }
 
-    @Override
     public int getY() {
         return y;
     }
@@ -199,7 +191,6 @@ public class Tank extends AbstractGameObject implements Collides {
         return tankGroup;
     }
 
-    @Override
     public void die() {
         this.live = false;
     }
