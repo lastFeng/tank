@@ -15,9 +15,16 @@
  */
 package server.object.collides;
 
+import server.TankFrame;
 import server.object.AbstractGameObject;
 import server.object.Bullet;
+import server.object.Explode;
 import server.object.Tank;
+
+import java.awt.*;
+
+import static server.Constant.TANK_IMAGE_HEIGHT;
+import static server.Constant.TANK_IMAGE_WITH;
 
 /**
  * <p> Title: </p>
@@ -30,13 +37,32 @@ import server.object.Tank;
  */
 public class BulletTankCollide implements Collides {
     @Override
-    public void collide(AbstractGameObject one, AbstractGameObject two) {
+    public boolean collide(AbstractGameObject one, AbstractGameObject two) {
         if (one instanceof Bullet && two instanceof Tank) {
             Bullet bullet = (Bullet) one;
             Tank tank = (Tank) two;
-            bullet.collideWithTank(tank);
+
+            if (!bullet.isLive() || !tank.isLive()) {
+                return false;
+            }
+
+            if (bullet.getTankGroup() == tank.getTankGroup()) {
+                return true;
+            }
+
+            Rectangle tankRect = new Rectangle(tank.getX(), tank.getY(), TANK_IMAGE_WITH, TANK_IMAGE_HEIGHT);
+
+            if (bullet.getRectangle().intersects(tankRect)) {
+                bullet.die();
+                tank.die();
+                TankFrame.INSTANCE.addGameObject(new Explode(tank.getX(), tank.getY()));
+                return false;
+            }
+
         } else if (one instanceof Tank && two instanceof Bullet) {
             collide(two, one);
         }
+
+        return true;
     }
 }

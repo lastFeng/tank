@@ -27,5 +27,11 @@ import server.object.AbstractGameObject;
  * @create: 2020/6/16 10:03
  */
 public interface Collides {
-    void collide(AbstractGameObject one, AbstractGameObject two);
+    /**
+     * 碰撞的两者,两个都不存活，无需继续检测碰撞返回：false
+     * @param one
+     * @param two
+     * @return
+     */
+    boolean collide(AbstractGameObject one, AbstractGameObject two);
 }

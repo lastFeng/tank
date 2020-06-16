@@ -18,7 +18,7 @@ package server;
 import server.object.AbstractGameObject;
 import server.object.NpcTank;
 import server.object.PlayerTank;
-import server.object.collides.Collides;
+import server.object.collides.CollideChain;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -44,17 +44,16 @@ public class TankFrame extends Frame {
     private PlayerTank myPlayerTank;
     private List<AbstractGameObject> objects;
     private Image offScreenImage = null;
-    private List<Collides> collides;
-
+    private CollideChain collideChain;
     private TankFrame(){
 
         this.setTitle("坦克大战");
         this.setLocation(200, 200);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
         this.addKeyListener(new TankKeyListener());
+        this.collideChain = new CollideChain();
 
         initGames();
-        initCollides();
     }
 
     private void initGames() {
@@ -64,22 +63,6 @@ public class TankFrame extends Frame {
         int initEnemyTank = Integer.valueOf(PropertyManager.get("initTankCount"));
         for (int i = 0; i < initEnemyTank; i++) {
             this.objects.add(new NpcTank(80 * i, 50, Direction.randDirection()));
-        }
-    }
-
-    private void initCollides() {
-        this.collides = new ArrayList<>();
-        String[] collides = PropertyManager.get("collides").split(",");
-        Class clazz = null;
-        Collides collide = null;
-        for (String sub : collides) {
-            try {
-                clazz = Class.forName("server.object.collides." + sub);
-                collide = (Collides)clazz.getDeclaredConstructor().newInstance();
-                this.collides.add(collide);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -114,9 +97,9 @@ public class TankFrame extends Frame {
         for (int i = 0; i < objects.size(); i++) {
             AbstractGameObject object = objects.get(i);
 
-            for (int j = 0; j < objects.size(); j++) {
+            for (int j = i + 1; j < objects.size(); j++) {
                 AbstractGameObject gameObject = objects.get(j);
-                collides.forEach(bulletCollidesTank -> bulletCollidesTank.collide(object, gameObject));
+                this.collideChain.collide(object, gameObject);
             }
 
             if (object.isLive()) {

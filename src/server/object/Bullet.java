@@ -39,6 +39,7 @@ public class Bullet extends AbstractGameObject{
     private int y;
     private Direction direction;
     private TankGroup tankGroup;
+    private Rectangle rectangle;
 
     public Bullet(int x, int y, Direction direction, TankGroup tankGroup) {
         this.x = x;
@@ -46,6 +47,7 @@ public class Bullet extends AbstractGameObject{
         this.direction = direction;
         this.tankGroup = tankGroup;
         this.live = true;
+        this.rectangle = new Rectangle(x, y, BULLET_IMAGE_WITH, BULLET_IMAGE_HEIGHT);
     }
 
     @Override
@@ -72,6 +74,9 @@ public class Bullet extends AbstractGameObject{
                 y = move[1];
             }
 
+            this.rectangle.x = x;
+            this.rectangle.y = y;
+
             this.live = !outOfBoundChecked(x, y, TankFrame.GAME_WIDTH, TankFrame.GAME_HEIGHT);
         }
     }
@@ -80,29 +85,15 @@ public class Bullet extends AbstractGameObject{
         return !live;
     }
 
-    /**
-     * 简单的碰撞检测,两个长方形是否相交
-     * @param tank
-     * @return
-     */
-    public void collideWithTank(Tank tank) {
-        if (!this.live || !tank.isLive()) {
-            return;
-        }
-        if (this.tankGroup == tank.tankGroup) {
-            return;
-        }
-        Rectangle bulletRect = new Rectangle(x, y, BULLET_IMAGE_WITH, BULLET_IMAGE_HEIGHT);
-        Rectangle tankRect = new Rectangle(tank.getX(), tank.getY(), TANK_IMAGE_WITH, TANK_IMAGE_HEIGHT);
-
-        if (bulletRect.intersects(tankRect)) {
-            this.die();
-            tank.die();
-            TankFrame.INSTANCE.addGameObject(new Explode(tank.getX(), tank.getY()));
-        }
+    public void die() {
+        this.live = false;
     }
 
-    private void die() {
-        this.live = false;
+    public TankGroup getTankGroup() {
+        return tankGroup;
+    }
+
+    public Rectangle getRectangle() {
+        return rectangle;
     }
 }
