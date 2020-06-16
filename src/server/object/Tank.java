@@ -1,9 +1,20 @@
-package server;
+package server.object;
+
+import server.Direction;
+import server.PropertyManager;
+import server.ResourceManager;
+import server.TankFrame;
+import server.TankGroup;
+import server.object.collides.Collides;
+import server.strategy.DefaultFireStrategy;
+import server.strategy.FireStrategy;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-import static server.Constant.*;
+import static server.Constant.TANK_IMAGE_HEIGHT;
+import static server.Constant.TANK_IMAGE_WITH;
+import static server.Constant.TANK_MOVE_SPEED;
 import static server.Direction.outOfBoundChecked;
 
 /**
@@ -12,7 +23,7 @@ import static server.Direction.outOfBoundChecked;
  * @date created in 2020/6/14 16:01
  * @description:
  */
-public class Tank {
+public class Tank extends AbstractGameObject implements Collides {
 
     protected int x;
     protected int y;
@@ -23,25 +34,36 @@ public class Tank {
     protected boolean bD;
     protected boolean moving;
     protected TankGroup tankGroup;
-    protected boolean live;
     protected int oldX;
     protected int oldY;
-    protected Bullet tankBullet;
+    protected FireStrategy fireStrategy;
 
-    public boolean isLive() {
-        return live;
-    }
-
-    public Tank(int x, int y, Direction direction) {
+    public Tank(int x, int y, Direction direction, TankGroup tankGroup) {
         this.x = x;
         this.y = y;
         this.direction = direction;
+        this.tankGroup = tankGroup;
         this.live = true;
-        this.tankGroup = TankGroup.BAD;
         this.oldX = x;
         this.oldY = y;
+        this.initFireStrategy();
     }
 
+    private void initFireStrategy() {
+        if (this.tankGroup == TankGroup.BAD) {
+            this.fireStrategy = new DefaultFireStrategy();
+            return;
+        }
+        String bulletFireStrategy = PropertyManager.get("bulletFireStrategy");
+        try {
+            Class clazz = Class.forName("server.strategy." + bulletFireStrategy);
+            this.fireStrategy = (FireStrategy)clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void paint(Graphics graphics){
         if (this.tankGroup == TankGroup.GOOD) {
             switch (direction) {
@@ -151,21 +173,33 @@ public class Tank {
     }
 
     public void fire() {
-        TankFrame tankFrame = TankFrame.INSTANCE;
-        int bulletX = x + TANK_IMAGE_WITH / 2 - BULLET_IMAGE_WITH / 2;
-        int bulletY = y + TANK_IMAGE_HEIGHT / 2 - BULLET_IMAGE_HEIGHT / 2;
-        tankBullet = new Bullet(bulletX, bulletY, direction, tankGroup);
-        tankFrame.addBullet(tankBullet, this);
+        fireStrategy.fire(this);
     }
 
+    @Override
+    public boolean isLive() {
+        return this.live;
+    }
+
+    @Override
     public int getX() {
         return x;
     }
 
+    @Override
     public int getY() {
         return y;
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public TankGroup getTankGroup() {
+        return tankGroup;
+    }
+
+    @Override
     public void die() {
         this.live = false;
     }

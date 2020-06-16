@@ -15,6 +15,13 @@
  */
 package server;
 
+import server.object.AbstractGameObject;
+import server.object.Bullet;
+import server.object.NpcTank;
+import server.object.PlayerTank;
+import server.object.Tank;
+import server.object.collides.Collides;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -37,10 +44,7 @@ public class TankFrame extends Frame {
     public static int GAME_WIDTH = 800;
     public static int GAME_HEIGHT = 800;
     private PlayerTank myPlayerTank;
-    private List<Bullet> playerBullets;
-    private List<NpcTank> npcTanks;
-    private List<Bullet> npcBullets;
-    private List<Explode> explodes;
+    private List<AbstractGameObject> objects;
     private Image offScreenImage = null;
 
     private TankFrame(){
@@ -54,16 +58,11 @@ public class TankFrame extends Frame {
     }
 
     private void initGames() {
-        this.myPlayerTank = new PlayerTank(400, 700, Direction.U);
-        this.playerBullets = new ArrayList<>();
-        this.npcTanks = new ArrayList<>();
-        this.npcBullets = new ArrayList<>();
-        this.explodes = new ArrayList<>();
-
+        this.objects = new ArrayList<>();
+        this.objects.add(new PlayerTank(400, 700, Direction.U));
         int initEnemyTank = Integer.valueOf(PropertyManager.get("initTankCount"));
-
         for (int i = 0; i < initEnemyTank; i++) {
-            npcTanks.add(new NpcTank(80 * i, 50, Direction.randDirection()));
+            this.objects.add(new NpcTank(80 * i, 50, Direction.randDirection()));
         }
     }
 
@@ -94,36 +93,29 @@ public class TankFrame extends Frame {
      */
     @Override
     public void paint(Graphics graphics) {
-        // 这边展示子弹的个数，需要进行边界检查，子弹从飞去游戏区后，从list移除
-        Color color = graphics.getColor();
-        graphics.setColor(Color.BLACK);
-        graphics.drawString("bullets:" + playerBullets.size(), 0, 50);
-        graphics.drawString("enemies:" + npcBullets.size(), 0, 100);
-        graphics.setColor(color);
 
-        if (myPlayerTank.isLive()) {
-            myPlayerTank.paint(graphics);
-        }
+        for (int i = 0; i < objects.size(); i++) {
+            AbstractGameObject object = objects.get(i);
 
-        paintBullet(npcBullets, myPlayerTank, graphics);
-
-        for (NpcTank enemyPlayerTank : npcTanks) {
-            if (enemyPlayerTank.isLive()) {
-                enemyPlayerTank.paint(graphics);
+            if (object instanceof Bullet) {
+                for (int j = 0; j < objects.size(); j++) {
+                    AbstractGameObject collide = objects.get(j);
+                    if (collide instanceof Collides) {
+                        ((Bullet)object).collideWithTank((Collides)collide);
+                    }
+                }
             }
 
-            paintBullet(playerBullets, enemyPlayerTank, graphics);
-        }
+            if (object instanceof PlayerTank) {
+                myPlayerTank = (PlayerTank) object;
+            }
 
-        for (int i = 0; i < explodes.size(); i++) {
-            Explode explode = explodes.get(i);
-            if (explode.isFinished()) {
-                explodes.remove(explode);
+            if (object.isLive()) {
+                object.paint(graphics);
             } else {
-                explode.paint(graphics);
+                objects.remove(object);
             }
         }
-
     }
 
     /**
@@ -141,17 +133,8 @@ public class TankFrame extends Frame {
         }
     }
 
-    public void addBullet(Bullet bullet, Tank tank) {
-        if (tank.tankGroup == TankGroup.GOOD) {
-            playerBullets.add(bullet);
-        }
-        if (tank.tankGroup == TankGroup.BAD) {
-            npcBullets.add(bullet);
-        }
-    }
-
-    public void addExplode(Explode explode) {
-        explodes.add(explode);
+    public void addGameObject(AbstractGameObject object) {
+        objects.add(object);
     }
 
     private void paintBullet(List<Bullet> bullets, Tank tank, Graphics graphics) {

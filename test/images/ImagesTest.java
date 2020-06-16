@@ -17,7 +17,7 @@ package images;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import server.PlayerTank;
+import server.object.PlayerTank;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

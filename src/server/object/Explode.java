@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package server;
+package server.object;
+
+import server.Audio;
+import server.ResourceManager;
 
 import java.awt.*;
 
@@ -26,24 +29,24 @@ import java.awt.*;
  * @version: 1.0
  * @create: 2020/6/15 13:46
  */
-public class Explode {
+public class Explode extends AbstractGameObject{
 
     private int x;
     private int y;
     private int step;
-    private boolean finished;
 
     public Explode(int x, int y) {
         this.x = x;
         this.y = y;
         this.step = 0;
-        this.finished = false;
+        this.live = true;
         new Thread(() -> new Audio("audio/explode.wav").play()).start();
     }
 
+    @Override
     public void paint(Graphics graphics) {
         if (step >= ResourceManager.explodes.length) {
-            this.finished = true;
+            this.live = false;
             return;
         }
         graphics.drawImage(ResourceManager.explodes[step], x, y, null);
@@ -51,10 +54,6 @@ public class Explode {
     }
 
     public boolean isFinished() {
-        return finished;
-    }
-
-    public void setFinished(boolean finished) {
-        this.finished = finished;
+        return !this.live;
     }
 }

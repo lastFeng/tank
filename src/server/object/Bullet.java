@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package server;
+package server.object;
+
+import server.Direction;
+import server.ResourceManager;
+import server.TankFrame;
+import server.TankGroup;
+import server.object.collides.Collides;
 
 import java.awt.*;
 
@@ -29,24 +35,24 @@ import static server.Direction.outOfBoundChecked;
  * @version: 1.0
  * @create: 2020/6/12 15:03
  */
-public class Bullet {
+public class Bullet extends AbstractGameObject{
     private int x;
     private int y;
     private Direction direction;
     private TankGroup tankGroup;
-    private boolean outOfBound;
 
     public Bullet(int x, int y, Direction direction, TankGroup tankGroup) {
         this.x = x;
         this.y = y;
         this.direction = direction;
         this.tankGroup = tankGroup;
-        this.outOfBound = false;
+        this.live = true;
     }
 
+    @Override
     public void paint(Graphics graphics) {
 
-        if (!outOfBound) {
+        if (live) {
             switch (direction) {
                 case L:
                     graphics.drawImage(ResourceManager.bulletL, x, y, null);
@@ -67,38 +73,41 @@ public class Bullet {
                 y = move[1];
             }
 
-            this.outOfBound = outOfBoundChecked(x, y, TankFrame.GAME_WIDTH, TankFrame.GAME_HEIGHT);
+            this.live = !outOfBoundChecked(x, y, TankFrame.GAME_WIDTH, TankFrame.GAME_HEIGHT);
         }
     }
 
     public boolean isOutOfBound() {
-        return outOfBound;
+        return !live;
     }
 
     /**
      * 简单的碰撞检测,两个长方形是否相交
-     * @param tank
+     * @param collides
      * @return
      */
-    public void collideWithTank(Tank tank) {
-        if (this.outOfBound || !tank.isLive()) {
+    public void collideWithTank(Collides collides) {
+        if (!this.live || !collides.isLive()) {
             return;
         }
 
-        if (this.tankGroup == tank.tankGroup) {
-            return;
+        if (collides instanceof Tank) {
+            Tank tank = (Tank) collides;
+            if (this.tankGroup == tank.tankGroup) {
+                return;
+            }
         }
         Rectangle bulletRect = new Rectangle(x, y, BULLET_IMAGE_WITH, BULLET_IMAGE_HEIGHT);
-        Rectangle tankRect = new Rectangle(tank.getX(), tank.getY(), TANK_IMAGE_WITH, TANK_IMAGE_HEIGHT);
+        Rectangle tankRect = new Rectangle(collides.getX(), collides.getY(), TANK_IMAGE_WITH, TANK_IMAGE_HEIGHT);
 
         if (bulletRect.intersects(tankRect)) {
             this.die();
-            tank.die();
-            TankFrame.INSTANCE.addExplode(new Explode(tank.getX(), tank.getY()));
+            collides.die();
+            TankFrame.INSTANCE.addGameObject(new Explode(collides.getX(), collides.getY()));
         }
     }
 
     private void die() {
-        this.outOfBound = true;
+        this.live = false;
     }
 }

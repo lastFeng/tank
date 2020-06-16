@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package server;
+package server.object;
+
+import server.Direction;
+import server.TankGroup;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-
-import static server.Constant.*;
+import java.util.Random;
 
 /**
  * <p> Title: </p>
@@ -29,10 +31,38 @@ import static server.Constant.*;
  * @version: 1.0
  * @create: 2020/6/12 10:36
  */
-public class PlayerTank extends Tank{
+public class NpcTank extends Tank{
 
-    public PlayerTank(int x, int y, Direction direction) {
-        super(x, y, direction);
-        this.tankGroup = TankGroup.GOOD;
+    private Random random = new Random();
+
+    public NpcTank(int x, int y, Direction direction) {
+        super(x, y, direction, TankGroup.BAD);
+        this.moving = true;
     }
+
+    @Override
+    public void paint(Graphics graphics) {
+
+        super.paint(graphics);
+        randomDirection();
+        if (random.nextInt(100) > 90) {
+            fire();
+        }
+    }
+
+    @Override
+    public void keyPressed(KeyEvent event) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent event) {
+    }
+
+    private void randomDirection() {
+        if (random.nextInt(100) > 90) {
+            direction = Direction.randDirection();
+        }
+    }
+
 }

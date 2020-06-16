@@ -1,1 +1,5 @@
 initTankCount=2
+
+# 子弹策略
+#bulletFireStrategy=DefaultFireStrategy
+bulletFireStrategy=AdvancedFireStrategy
