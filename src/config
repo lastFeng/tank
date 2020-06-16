@@ -1,5 +1,9 @@
+# 敌方坦克数量
 initTankCount=2
 
 # 子弹策略
-#bulletFireStrategy=DefaultFireStrategy
-bulletFireStrategy=AdvancedFireStrategy
+bulletFireStrategy=DefaultFireStrategy
+#bulletFireStrategy=AdvancedFireStrategy
+
+# 碰撞检测
+collides=BulletTankCollide
