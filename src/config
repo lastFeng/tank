@@ -6,4 +6,4 @@ bulletFireStrategy=DefaultFireStrategy
 #bulletFireStrategy=AdvancedFireStrategy
 
 # 碰撞检测
-collides=BulletTankCollide
+collides=BulletTankCollide,TankTankCollide

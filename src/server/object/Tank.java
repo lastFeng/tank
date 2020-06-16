@@ -33,9 +33,9 @@ public class Tank extends AbstractGameObject {
     protected boolean bD;
     protected boolean moving;
     protected TankGroup tankGroup;
-    protected int oldX;
-    protected int oldY;
     protected FireStrategy fireStrategy;
+    protected Rectangle rectangle;
+    protected boolean collide;
 
     public Tank(int x, int y, Direction direction, TankGroup tankGroup) {
         this.x = x;
@@ -43,9 +43,9 @@ public class Tank extends AbstractGameObject {
         this.direction = direction;
         this.tankGroup = tankGroup;
         this.live = true;
-        this.oldX = x;
-        this.oldY = y;
+        this.collide = false;
         this.initFireStrategy();
+        this.rectangle = new Rectangle(x, y, TANK_IMAGE_WITH, TANK_IMAGE_HEIGHT);
     }
 
     private void initFireStrategy() {
@@ -104,12 +104,16 @@ public class Tank extends AbstractGameObject {
         if (move != null) {
             boolean boundChecked = outOfBoundChecked(move[0], move[1], TankFrame.GAME_WIDTH - TANK_IMAGE_WITH, TankFrame.GAME_HEIGHT - TANK_IMAGE_HEIGHT);
 
-            if (!boundChecked) {
+            if (!boundChecked && !collide) {
                 x = move[0];
                 y = move[1];
             }
 
+            collide = false;
         }
+
+        rectangle.x = x;
+        rectangle.y = y;
     }
 
     public void keyPressed(KeyEvent event) {
@@ -193,5 +197,13 @@ public class Tank extends AbstractGameObject {
 
     public void die() {
         this.live = false;
+    }
+
+    public Rectangle getRectangle() {
+        return rectangle;
+    }
+
+    public void collide() {
+        this.collide = true;
     }
 }
