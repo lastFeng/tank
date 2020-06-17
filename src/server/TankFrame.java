@@ -16,15 +16,13 @@
 package server;
 
 import server.object.AbstractGameObject;
-import server.object.NpcTank;
-import server.object.PlayerTank;
-import server.object.collides.CollideChain;
+import server.object.GameModel;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * <p> Title: </p>
@@ -38,32 +36,24 @@ import java.util.List;
 public class TankFrame extends Frame {
 
     public static final TankFrame INSTANCE = new TankFrame();
-
     public static int GAME_WIDTH = 800;
     public static int GAME_HEIGHT = 800;
-    private PlayerTank myPlayerTank;
-    private List<AbstractGameObject> objects;
     private Image offScreenImage = null;
-    private CollideChain collideChain;
+    private GameModel gameModel;
+
     private TankFrame(){
 
         this.setTitle("坦克大战");
         this.setLocation(200, 200);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
         this.addKeyListener(new TankKeyListener());
-        this.collideChain = new CollideChain();
-
-        initGames();
-    }
-
-    private void initGames() {
-        this.objects = new ArrayList<>();
-        this.myPlayerTank = new PlayerTank(400, 700, Direction.U);
-        this.objects.add(myPlayerTank);
-        int initEnemyTank = Integer.valueOf(PropertyManager.get("initTankCount"));
-        for (int i = 0; i < initEnemyTank; i++) {
-            this.objects.add(new NpcTank(80 * i, 50, Direction.randDirection()));
-        }
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(1);
+            }
+        });
+        this.gameModel = new GameModel();
     }
 
     /**
@@ -93,21 +83,11 @@ public class TankFrame extends Frame {
      */
     @Override
     public void paint(Graphics graphics) {
+        gameModel.paint(graphics);
+    }
 
-        for (int i = 0; i < objects.size(); i++) {
-            AbstractGameObject object = objects.get(i);
-
-            for (int j = i + 1; j < objects.size(); j++) {
-                AbstractGameObject gameObject = objects.get(j);
-                this.collideChain.collide(object, gameObject);
-            }
-
-            if (object.isLive()) {
-                object.paint(graphics);
-            } else {
-                objects.remove(object);
-            }
-        }
+    public void addGameObject(AbstractGameObject object) {
+        gameModel.addGameObject(object);
     }
 
     /**
@@ -116,16 +96,12 @@ public class TankFrame extends Frame {
     private class TankKeyListener extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent event) {
-            myPlayerTank.keyPressed(event);
+            gameModel.getMyPlayerTank().keyPressed(event);
         }
 
         @Override
         public void keyReleased(KeyEvent event) {
-            myPlayerTank.keyReleased(event);
+            gameModel.getMyPlayerTank().keyReleased(event);
         }
-    }
-
-    public void addGameObject(AbstractGameObject object) {
-        objects.add(object);
     }
 }
