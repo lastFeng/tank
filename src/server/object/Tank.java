@@ -35,15 +35,17 @@ public class Tank extends AbstractGameObject {
     protected TankGroup tankGroup;
     protected FireStrategy fireStrategy;
     protected Rectangle rectangle;
-    protected boolean collide;
+    protected int oldX;
+    protected int oldY;
 
     public Tank(int x, int y, Direction direction, TankGroup tankGroup) {
         this.x = x;
         this.y = y;
+        this.oldX = x;
+        this.oldY = y;
         this.direction = direction;
         this.tankGroup = tankGroup;
         this.live = true;
-        this.collide = false;
         this.initFireStrategy();
         this.rectangle = new Rectangle(x, y, TANK_IMAGE_WITH, TANK_IMAGE_HEIGHT);
     }
@@ -98,22 +100,24 @@ public class Tank extends AbstractGameObject {
             }
         }
 
+        boolean boundChecked = outOfBoundChecked(x, y, TankFrame.GAME_WIDTH - TANK_IMAGE_WITH, TankFrame.GAME_HEIGHT - TANK_IMAGE_HEIGHT);
 
-        int[] move = Direction.move(this.moving, x, y, TANK_MOVE_SPEED, direction);
+        if (boundChecked) {
+            restore();
+        } else {
 
-        if (move != null) {
-            boolean boundChecked = outOfBoundChecked(move[0], move[1], TankFrame.GAME_WIDTH - TANK_IMAGE_WITH, TankFrame.GAME_HEIGHT - TANK_IMAGE_HEIGHT);
-
-            if (!boundChecked && !collide) {
+            if (moving) {
+                back();
+                int[] move = Direction.move(this.moving, x, y, TANK_MOVE_SPEED, direction);
                 x = move[0];
                 y = move[1];
             }
-
-            collide = false;
         }
 
         rectangle.x = x;
         rectangle.y = y;
+
+        graphics.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
 
     public void keyPressed(KeyEvent event) {
@@ -203,7 +207,13 @@ public class Tank extends AbstractGameObject {
         return rectangle;
     }
 
-    public void collide() {
-        this.collide = true;
+    public void back() {
+        this.oldX = x;
+        this.oldY = y;
+    }
+
+    public void restore(){
+        this.x = oldX;
+        this.y = oldY;
     }
 }

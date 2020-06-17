@@ -46,7 +46,7 @@ public class NpcTank extends Tank{
         super.paint(graphics);
         randomDirection();
         if (random.nextInt(100) > 90) {
-            fire();
+            //fire();
         }
     }
 
