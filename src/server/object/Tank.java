@@ -117,7 +117,7 @@ public class Tank extends AbstractGameObject {
         rectangle.x = x;
         rectangle.y = y;
 
-        graphics.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+        //graphics.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
 
     public void keyPressed(KeyEvent event) {
