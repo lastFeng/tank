@@ -15,14 +15,14 @@
  */
 package netty;
 
-import io.netty.bootstrap.ServerBootstrap;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 
 /**
  * <p> Title: </p>
@@ -31,44 +31,34 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  *
  * @author: Guo Weifeng
  * @version: 1.0
- * @create: 2020/6/18 9:57
+ * @create: 2020/6/18 10:46
  */
-public class DiscardServer {
-    private int port;
+public class TimeProtocolClient {
+    public static void main(String[] args) {
+        int port = 9999;
+        String ip = "localhost";
 
-    public DiscardServer(int port) {
-        this.port = port;
-    }
-
-    public void start() {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast(new DiscardServerHandler());
-                    }
-                })
-            .option(ChannelOption.SO_BACKLOG, 128)
-            .childOption(ChannelOption.SO_KEEPALIVE, true);
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(workerGroup);
+            bootstrap.channel(NioSocketChannel.class);
+            bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+                @Override
+                protected void initChannel(SocketChannel socketChannel) throws Exception {
+                    socketChannel.pipeline().addLast(new TimeClientHandler());
+                }
+            });
+            bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 
-            ChannelFuture future = b.bind(port).sync();
-
+            ChannelFuture future = bootstrap.connect(ip, port).sync();
             future.channel().closeFuture().sync();
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
         }
-    }
-
-    public static void main(String[] args) {
-        new DiscardServer(9999).start();
     }
 }

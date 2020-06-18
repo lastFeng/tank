@@ -31,12 +31,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  *
  * @author: Guo Weifeng
  * @version: 1.0
- * @create: 2020/6/18 9:57
+ * @create: 2020/6/18 10:27
  */
-public class DiscardServer {
+public class TimeServer {
     private int port;
 
-    public DiscardServer(int port) {
+    public TimeServer(int port) {
         this.port = port;
     }
 
@@ -45,30 +45,28 @@ public class DiscardServer {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast(new DiscardServerHandler());
-                    }
-                })
-            .option(ChannelOption.SO_BACKLOG, 128)
+                .childHandler((new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            socketChannel.pipeline().addLast(new TimeProtocolHandler());
+                        }
+                    })).option(ChannelOption.SO_BACKLOG, 128)
             .childOption(ChannelOption.SO_KEEPALIVE, true);
-
-            ChannelFuture future = b.bind(port).sync();
-
+            ChannelFuture future = bootstrap.bind(port).sync();
             future.channel().closeFuture().sync();
-        } catch (Exception e) {
+
+        } catch (Exception e){
             e.printStackTrace();
-        } finally {
+        }finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
     }
 
     public static void main(String[] args) {
-        new DiscardServer(9999).start();
+        new TimeServer(9999).start();
     }
 }
